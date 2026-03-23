@@ -7,7 +7,9 @@ export const authorizeRole = (role: string) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     if (req.user.role !== role) {
-      return res.status(403).json({ message: "Forbidden" });
+      return res
+        .status(403)
+        .json({ message: "Forbidden you must have admin privileges" });
     }
     next();
   };

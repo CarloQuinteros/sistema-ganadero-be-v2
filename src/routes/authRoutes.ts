@@ -2,6 +2,8 @@ import { Router } from "express";
 import { prisma } from "../prisma.js";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
+import { body } from "express-validator";
+import { signupController } from "../controllers/signupController.js";
 
 const authRouter = Router();
 
@@ -42,4 +44,15 @@ authRouter.post("/login", async (req, res) => {
   });
 });
 
+authRouter.post(
+  "/signup",
+  [
+    body("name").notEmpty().withMessage("Name is required"),
+    body("email").isEmail().withMessage("Invalid email format"),
+    body("password")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters long"),
+  ],
+  signupController,
+);
 export default authRouter;
