@@ -1,5 +1,6 @@
 import { Router } from "express";
-
+import { authorization } from "../middleware/authMiddleware.js";
+import { authorizeRole } from "../middleware/roleMiddleware.js";
 const agendaRouter = Router();
 
 /**
@@ -24,8 +25,8 @@ const agendaRouter = Router();
 
  */
 
-agendaRouter.get("/", (req, res) => {
-  res.send({ message: "Agenda route works!" });
+agendaRouter.get("/", authorization, authorizeRole("ADMIN"), (req, res) => {
+  res.send({ message: "Agenda route works! access granted" });
 });
 
 export default agendaRouter;
