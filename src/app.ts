@@ -4,12 +4,14 @@ import swaggerSpec from "./config/swagger.js";
 import agendaRouter from "./routes/agendaRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import dotenv from "dotenv";
+import logger from "./utils/logger.js";
 
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
+app.use(logger);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/agenda", agendaRouter);
