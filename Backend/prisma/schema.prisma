@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id String @id @default(uuid())
+  email String @unique
+  name String?
+  password String
+  role Role @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive Boolean @default(true)
+
+}
+
+model Animal{
+  id String @id @default(uuid())
+  category String
+  sex String
+  breed String
+  ageAtEntry Int @map("age_at_entry")
+  weightAtEntry Float @map("weight_at_entry")
+  price Float? @default(0)
+  purchaseDate DateTime? @map("purchase_date")
+  earTag Int @map("ear_tag")
+  vaccines String[]
+  purpose   String
+  providerId String @map("provider_id")
+  imageUrl String? @map("image_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdById String @map("created_by_id")
+  updatedById String? @map("updated_by_id")
+  corralId String? @map("corral_id")
+  isActive Boolean @default(true) @map("is_active")
+  deactivatedAt DateTime? @map("deactivated_at")
+  targetWeight Float? @default(1.4) @map("target_weight")
+  priceType PriceType @default(POR_KILO) @map("price_type")
+  entryDate DateTime @map("entry_date")
+  corral Corral? @relation(fields: [corralId], references: [id])
+  provider           Agenda?                    @relation(fields: [providerId], references: [id])
+  
+ 
+}
+
+
+model Corral {
+  id           String        @id @default(uuid())
+  description  String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
+  corralNumber Int           @unique @map("corral_number")
+  animals      Animal[]
+ 
+
+  @@map("corral")
+}
+
+model Agenda {
+  id         String    @id @default(uuid())
+  company    String
+  name       String?
+  address    String?
+  phone      String?
+  email      String?
+  isClient   Boolean   @default(false) @map("is_client")
+  isProvider Boolean   @default(false) @map("is_provider")
+  notes      String?
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @default(now()) @updatedAt @map("updated_at")
+  animals    Animal[]
+ 
+
+  @@map("agenda")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PriceType {
+  POR_PUNTA
+  POR_KILO
+}
