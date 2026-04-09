@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 import logger from "./utils/logger.js";
 import corralRouter from "./routes/corralRoutes.js";
 import animalRouter from "./routes/animalRoutes.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 app.use("/upload", express.static(path.join(__dirname, "../upload")));
+app.use(cors());
 app.use(express.json());
 app.use(logger);
 
