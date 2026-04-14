@@ -2,23 +2,36 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import ProtectedRoutes from "./ProtectedRoute";
+import MainLayout from "@/layouts/MainLayout";
+import Animals from "@/pages/Animals";
 
 function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        /* Ruta Publica*/
-        <Route path="/" element={<Navigate to="/login" />} />
+        {/* Ruta Publica */}
+
         <Route path="/login" element={<Login />} />
-        /* Ruta Protegida*/
+        {/* Ruta Protegida*/}
+        {/* Redirección raíz */}
         <Route
-          path="/dashboard"
+          path="/"
           element={
             <ProtectedRoutes>
-              <Dashboard />
+              <Navigate to="/dashboard" />
             </ProtectedRoutes>
           }
         />
+        <Route
+          element={
+            <ProtectedRoutes>
+              <MainLayout />
+            </ProtectedRoutes>
+          }
+        >
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/animals" element={<Animals />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
