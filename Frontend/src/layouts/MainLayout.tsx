@@ -1,4 +1,6 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { menuItems } from "@/lib/menuItems";
+import { Button } from "@/components/ui/button";
 
 function MainLayout() {
   const navigate = useNavigate();
@@ -14,15 +16,21 @@ function MainLayout() {
       <aside className="w-64 bg-gray-800 text-white p-4 flex flex-col">
         <h2 className="text-lg font-bold mb-6">Sistema Ganadero</h2>
         <nav className="flex flex-col gap-3 flex-1">
-          <Link to="/dashboard">Dashboard</Link>
-          <Link to="/animals">Animals</Link>
-
-          <button
-            className="mt-auto bg-red-500 p-2 rounded"
+          {menuItems.map(({ label, path, icon: Icon }) => (
+            <Link key={path} to={path}>
+              <div className="flex items-center gap-2">
+                <Icon size={16} />
+                {label}
+              </div>
+            </Link>
+          ))}
+          <Button
+            variant="destructive"
+            className="mt-auto"
             onClick={handleLogout}
           >
             Logout
-          </button>
+          </Button>
         </nav>
       </aside>
       <main className="flex-1 p-6 w-full">
