@@ -4,6 +4,9 @@ import Dashboard from "@/pages/Dashboard";
 import ProtectedRoutes from "./ProtectedRoute";
 import MainLayout from "@/layouts/MainLayout";
 import Animals from "@/pages/Animals";
+import { RoutePath } from "./routeConfig";
+import NotFound from "@/pages/NotFoundPage";
+import Error from "@/pages/ErrorPage";
 
 function AppRouter() {
   return (
@@ -11,7 +14,13 @@ function AppRouter() {
       <Routes>
         {/* Ruta Publica */}
 
-        <Route path="/login" element={<Login />} />
+        <Route path={RoutePath.LOGIN} element={<Login />} />
+        <Route path={RoutePath.NOT_FOUND} element={<NotFound />} />
+        <Route path={RoutePath.ERROR} element={<Error />} />
+        <Route
+          path="*"
+          element={<Navigate to={RoutePath.NOT_FOUND} replace />}
+        />
         {/* Ruta Protegida*/}
         {/* Redirección raíz */}
         <Route
