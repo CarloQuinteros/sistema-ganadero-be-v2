@@ -17,7 +17,7 @@ export default function ErrorPage() {
         </p>
         <div className="flex flex-col gap-4 sm:flex-row">
           <Button
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/")}
             className="flex items-center gap-2"
           >
             <Home size={16} />

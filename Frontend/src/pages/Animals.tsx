@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { getAnimals, deleteAnimal } from "@/services/AnimalService";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import AnimalFormModal from "@/components/animals/AnimalFormModal";
 
 function Animals() {
   const [animals, setAnimals] = useState([]);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    category: "",
-    sex: "",
-    breed: "",
-    ageAtEntry: "",
-    weightAtEntry: "",
-    earTag: "",
-    purpose: "",
-  });
+  const [isOpen, setIsOpen] = useState(false);
 
   const capitalizeFirstLetter = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -44,13 +44,28 @@ function Animals() {
   };
   return (
     <div>
-      <h1 className="text-2xl mb-5">Lista de animales</h1>
-      <button
-        className="bg-green-600 hover:bg-green-800 text-white font-bold py-1 px-2 rounded mb-4"
-        onClick={() => setShowForm(true)}
-      >
-        Crear Animal
-      </button>
+      <div className="flex justify-between ">
+        <h1 className="text-2xl mb-5">Lista de animales</h1>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <Button
+              className="bg-green-600 hover:bg-green-800 text-white font-bold py-1 px-2 rounded mb-4"
+              onClick={() => setIsOpen(true)}
+            >
+              Añadir Animal
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Registrar nuevo animal</DialogTitle>
+            </DialogHeader>
+
+            {/* Le pasamos una función al modal para que sepa cerrarse */}
+            <AnimalFormModal onSuccess={() => setIsOpen(false)} />
+          </DialogContent>
+        </Dialog>
+      </div>
       <table className="w-full  table-fixed text-center">
         <thead className="bg-gray-200">
           <tr>
@@ -94,30 +109,6 @@ function Animals() {
           ))}
         </tbody>
       </table>
-      {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <form className="bg-white p-6 rounded w-96">
-            <label htmlFor="earTag">EarTag:</label>
-            <input id="earTag" type="number" placeholder="EarTag" />
-            <label htmlFor="breed">Breed:</label>
-            <input id="breed" type="text" placeholder="Breed" />
-            <label htmlFor="purpose">Purpose:</label>
-            <input id="purpose" type="text" placeholder="Purpose" />
-            <label htmlFor="sex">Sex:</label>
-            <input id="sex" type="text" placeholder="Sex" />
-            <label htmlFor="weightAtEntry">Weight at Entry:</label>
-            <input
-              id="weightAtEntry"
-              type="number"
-              placeholder="Weight at Entry"
-            />
-
-            <button type="submit" className="bg-green-700 border rounded">
-              Crear Animal
-            </button>
-          </form>
-        </div>
-      )}
     </div>
   );
 }
