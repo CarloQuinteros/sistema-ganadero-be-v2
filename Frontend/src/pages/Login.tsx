@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { loginRequest } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -61,9 +62,7 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="w-full bg-blue-500 text-white p-2 mt-2">
-          Login
-        </button>
+        <Button type="submit">Login</Button>
         {error && <p className="text-red-500 mt-2">{error}</p>}
       </form>
     </div>

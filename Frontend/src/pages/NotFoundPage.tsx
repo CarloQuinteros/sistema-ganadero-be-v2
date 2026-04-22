@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
@@ -11,13 +12,13 @@ export default function NotFoundPage() {
         <p className="mb-6 max-w-md text-muted-foreground">
           Lo sentimos, la página que estás buscando no existe o ha sido movida.
         </p>
-        <button
+        <Button
           onClick={() => navigate("/")}
           className="flex items-center gap-2"
         >
           <Home size={16} />
           Volver a la página de inicio
-        </button>
+        </Button>
       </div>
     </div>
   );
