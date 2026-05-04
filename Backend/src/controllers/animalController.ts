@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { prisma } from "../prisma.js";
-import { success } from "zod";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -16,6 +15,7 @@ export const createAnimal = async (
 ) => {
   try {
     const userId = req.user?.id;
+    let imageUrl = "/upload/animals/default.jpg";
 
     if (!userId) {
       res.status(401).json({
@@ -24,24 +24,21 @@ export const createAnimal = async (
       });
     }
 
-    if (!req.file) {
-      res.status(400).json({
-        success: false,
-        error: "No se ha subido ningún archivo",
-      });
-      return;
+    if (req.file) {
+      imageUrl = `/upload/animals/${req.file.filename}`;
     }
-
-    const imageUrl = `/upload/animals/${req.file.filename}`;
 
     const data = req.body;
 
-    const { corralId, providerId, ...animalData } = data;
+    const { corralId, providerId, entryDate, purchaseDate, ...animalData } =
+      data;
     const newAnimal = await prisma.animal.create({
       data: {
         ...animalData,
+        entryDate: data.entryDate ? new Date(data.entryDate) : null,
+        purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : null,
         corral: data.corralId ? { connect: { id: data.corralId } } : undefined,
-        imageUrl: imageUrl || "upload/animals/default.jpg",
+        imageUrl,
         provider: data.providerId
           ? { connect: { id: data.providerId } }
           : undefined,
