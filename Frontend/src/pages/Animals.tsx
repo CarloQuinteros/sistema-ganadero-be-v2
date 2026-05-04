@@ -49,20 +49,25 @@ function Animals() {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button
-              className="bg-green-600 hover:bg-green-800 text-white font-bold py-1 px-2 rounded mb-4"
+              className="bg-primary hover:bg-(--primary-hover) text-white font-bold py-1 px-2 rounded mb-4"
               onClick={() => setIsOpen(true)}
             >
               Añadir Animal
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-200! w-full">
             <DialogHeader>
               <DialogTitle>Registrar nuevo animal</DialogTitle>
             </DialogHeader>
 
             {/* Le pasamos una función al modal para que sepa cerrarse */}
-            <AnimalFormModal onSuccess={() => setIsOpen(false)} />
+            <AnimalFormModal
+              onSuccess={() => {
+                setIsOpen(false);
+                fetchAnimals();
+              }}
+            />
           </DialogContent>
         </Dialog>
       </div>

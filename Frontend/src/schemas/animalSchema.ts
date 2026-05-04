@@ -1,45 +1,66 @@
-import { z } from "zod";
+import * as z from "zod";
+export const priceTypeOptions = ["POR_PUNTA", "POR_KILO"] as const;
+export const sexOptions = ["macho", "hembra"] as const;
+export const categoryOptions = [
+  "ternero",
+  "novillo",
+  "vaca",
+  "toro",
+  "vaquillona",
+  "vaquilla",
+  "desmamante",
+] as const;
+
+export const breedOptions = [
+  "holstein",
+  "jersey",
+  "angus",
+  "hereford",
+  "brahman",
+  "simental",
+  "nelore",
+  "gir",
+  "guzerat",
+] as const;
+
+export const purposeOptions = [
+  "leche",
+  "carne",
+  "reproduccion",
+  "doble proposito",
+] as const;
 
 export const animalSchema = z.object({
-  category: z.enum([
-    "ternero",
-    "novillo",
-    "vaca",
-    "toro",
-    "vaquillona",
-    "vaquilla",
-    "desmamante",
-  ]),
-  sex: z.enum(["macho", "hembra"]).default("macho"),
-  breed: z.enum([
-    "holstein",
-    "jersey",
-    "angus",
-    "hereford",
-    "brahman",
-    "simental",
-    "nelore",
-    "gir",
-    "guzerat",
-  ]),
+  earTag: z.coerce
+    .number("Debe ser un número")
+    .int("Numero de caravana debe ser un número entero")
+    .positive("Numero de caravana debe ser un número positivo")
+    .min(1, "Numero de caravana es requerido"),
+  category: z.enum(categoryOptions, "Debe seleccionar una categoría"),
+  sex: z.enum(sexOptions, "Debe seleccionar un sexo"),
+  breed: z.enum(breedOptions, "Debes seleccionar una raza"),
   weightAtEntry: z.coerce
     .number()
-    .min(20, "El peso no puede ser menos que 20Kg"),
-  price: z.coerce.number().min(0, "El precio no puede ser negativo").optional(),
-  purchaseDate: z.string().nullable().optional(),
-
-  entryDate: z.string(),
-
-  earTag: z.coerce
-    .number()
-    .int("Debe ser un numero entero")
-    .min(1, { message: "Numero de caravana es requerido" }),
-  purpose: z.enum(["leche", "carne", "reproduccion", "doble proposito"]),
-  ageAtEntry: z.coerce.number().int().min(0, "La edad no puede ser negativa"),
+    .min(20, "El peso no puede ser menos que 20Kg")
+    .optional(),
+  price: z.coerce
+    .number("El precio es requerido")
+    .min(0, "El precio no puede ser negativo"),
+  purchaseDate: z.date().nullable().optional(),
+  entryDate: z.date("Debe seleccionar una fecha de ingreso del animal"),
+  purpose: z.enum(purposeOptions, "Seleccione un proposito"),
+  ageAtEntry: z.coerce
+    .number("La edad es requerida")
+    .int()
+    .min(0, "La edad no puede ser negativa"),
   corralId: z.string().uuid().nullable().optional(),
-  providerId: z.string().uuid().nullable().optional(),
+  providerId: z
+    .string()
+    .uuid()
+    .nullable()
+    .default("1e4afaca-4ade-4115-8c64-1ad357c51f3e"),
   targetWeight: z.coerce.number().default(1.4),
-  priceType: z.enum(["POR_PUNTA", "POR_KILO"]).default("POR_PUNTA"),
+  priceType: z.enum(priceTypeOptions).default("POR_PUNTA"),
 });
 
 export const updateAnimalSchema = animalSchema.partial({
@@ -47,8 +68,5 @@ export const updateAnimalSchema = animalSchema.partial({
   purchaseDate: true,
 });
 
-export const categoryOptions = animalSchema.shape.category.options;
-export const breedOptions = animalSchema.shape.breed.options;
-export const purposeOptions = animalSchema.shape.purpose.options;
 export type AnimalFormValues = z.infer<typeof animalSchema>;
 export type UpdateAnimalFormValues = z.infer<typeof updateAnimalSchema>;

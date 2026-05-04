@@ -26,32 +26,8 @@ export const createAnimalSchema = z.object({
     .number()
     .min(20, "El peso no puede ser menos que 20Kg"),
   price: z.coerce.number().min(0, "El precio no puede ser negativo"),
-  purchaseDate: z
-    .string()
-    .optional()
-    .transform((val) => {
-      if (!val) return null;
-      const [d, m, y] = val.split("/");
-      const date = new Date(Number(y), Number(m) - 1, Number(d));
-
-      if (isNaN(date.getTime())) {
-        throw new Error("Fecha Invalida");
-      }
-      if (date > new Date()) {
-        throw new Error("La fecha no puede ser futura");
-      }
-
-      return date;
-    }),
-
-  entryDate: z.string().transform((val) => {
-    const [d, m, y] = val.split("/");
-    const date = new Date(Number(y), Number(m) - 1, Number(d));
-    if (isNaN(date.getTime())) {
-      throw new Error("Fecha Invalida");
-    }
-    return date;
-  }),
+  entryDate: z.coerce.date("Debe seleccionar una fecha de ingreso del animal"),
+  purchaseDate: z.coerce.date().nullable(),
 
   earTag: z.coerce
     .number()
