@@ -13,7 +13,7 @@ function MainLayout() {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-800 text-white p-4 flex flex-col">
+      <aside className="w-64 bg-primary text-white p-4 flex flex-col">
         <h2 className="text-lg font-bold mb-6">Sistema Ganadero</h2>
         <nav className="flex flex-col gap-3 flex-1">
           {menuItems.map(({ label, path, icon: Icon }) => (
