@@ -44,6 +44,7 @@ animalRouter.put(
   "/:id",
   authorization,
   authorizeRole("ADMIN"),
+  upload.single("image"),
   validateSchema(updateAnimalSchema),
   updateAnimal,
 );
