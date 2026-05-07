@@ -25,33 +25,70 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Upload } from "lucide-react";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
-import { createAnimal } from "@/services/AnimalService";
+import { createAnimal, updateAnimal } from "@/services/AnimalService";
 
-function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
+type props = {
+  onSuccess: () => void;
+  animal?: any;
+};
+
+function AnimalFormModal({ onSuccess, animal }: props) {
   const [openPurchase, setOpenPurchase] = useState(false);
   const [openEntry, setOpenEntry] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const getError = (error: any) => error?.message ?? null;
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
+    setValue,
+    reset,
   } = useForm({
     resolver: zodResolver(animalSchema),
     mode: "onChange",
+    defaultValues: animal
+      ? {
+          ...animal,
+          entryDate: animal.entryDate ? new Date(animal.entryDate) : null,
+          purchaseDate: animal.purchaseDate
+            ? new Date(animal.purchaseDate)
+            : null,
+        }
+      : {},
   });
 
   const onSubmit = async (data: AnimalFormValues) => {
     try {
-      await createAnimal(data);
+      if (animal) {
+        await updateAnimal(animal.id, data);
+      } else {
+        await createAnimal(data);
+      }
       onSuccess();
     } catch (error) {
       console.error("Error creating animal:", error);
     }
   };
+
+  useEffect(() => {
+    if (!animal) {
+      reset({});
+      setPreview(null);
+      return;
+    }
+
+    if (animal.imageUrl) {
+      setPreview(`http://localhost:3000${animal.imageUrl}`);
+    }
+  }, [animal]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -64,9 +101,9 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
             placeholder="12345"
             autoComplete="off"
           />
-          {errors.earTag && (
+          {errors.earTag?.message && (
             <FieldError className="text-red-500">
-              {errors.earTag?.message}
+              {getError(errors.earTag)}
             </FieldError>
           )}
         </Field>
@@ -91,7 +128,9 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
               </Select>
             )}
           />
-          {errors.breed && <FieldError>{errors.breed?.message}</FieldError>}
+          {errors.breed?.message && (
+            <FieldError>{getError(errors.breed)}</FieldError>
+          )}
         </Field>
         <Field>
           <FieldLabel htmlFor="category">Categoría</FieldLabel>
@@ -113,8 +152,8 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
               </Select>
             )}
           />
-          {errors.category && (
-            <FieldError>{errors.category?.message}</FieldError>
+          {errors.category?.message && (
+            <FieldError>{getError(errors.category)}</FieldError>
           )}
         </Field>
         <Field>
@@ -126,8 +165,8 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
             type="number"
             step="0.1"
           />
-          {errors.weightAtEntry && (
-            <FieldError>{errors.weightAtEntry?.message}</FieldError>
+          {errors.weightAtEntry?.message && (
+            <FieldError>{getError(errors.weightAtEntry)}</FieldError>
           )}
         </Field>
 
@@ -139,9 +178,9 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
             placeholder="12345"
             autoComplete="off"
           />
-          {errors.price && (
+          {errors.price?.message && (
             <FieldError className="text-red-500">
-              {errors.price?.message}
+              {getError(errors.price)}
             </FieldError>
           )}
         </Field>
@@ -166,7 +205,9 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
               </Select>
             )}
           />
-          {errors.sex && <FieldError>{errors.sex?.message}</FieldError>}
+          {errors.sex?.message && (
+            <FieldError>{getError(errors.sex)}</FieldError>
+          )}
         </Field>
 
         <Field>
@@ -189,8 +230,8 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
               </Select>
             )}
           />
-          {errors.priceType && (
-            <FieldError>{errors.priceType?.message}</FieldError>
+          {errors.priceType?.message && (
+            <FieldError>{getError(errors.priceType)}</FieldError>
           )}
         </Field>
 
@@ -231,8 +272,8 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
               </Popover>
             )}
           />
-          {errors.purchaseDate && (
-            <FieldError>{errors.purchaseDate?.message}</FieldError>
+          {errors.purchaseDate?.message && (
+            <FieldError>{getError(errors.purchaseDate)}</FieldError>
           )}
         </Field>
 
@@ -273,8 +314,8 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
               </Popover>
             )}
           />
-          {errors.entryDate && (
-            <FieldError>{errors.entryDate?.message}</FieldError>
+          {errors.entryDate?.message && (
+            <FieldError>{getError(errors.entryDate)}</FieldError>
           )}
         </Field>
 
@@ -298,7 +339,9 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
               </Select>
             )}
           />
-          {errors.purpose && <FieldError>{errors.purpose?.message}</FieldError>}
+          {errors.purpose?.message && (
+            <FieldError>{getError(errors.purpose)}</FieldError>
+          )}
         </Field>
 
         <Field>
@@ -311,8 +354,8 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
             type="number"
             step="1"
           />
-          {errors.ageAtEntry && (
-            <FieldError>{errors.ageAtEntry?.message}</FieldError>
+          {errors.ageAtEntry?.message && (
+            <FieldError>{getError(errors.ageAtEntry)}</FieldError>
           )}
         </Field>
         <Field>
@@ -325,9 +368,35 @@ function AnimalFormModal({ onSuccess }: { onSuccess: () => void }) {
             type="number"
             step="0.1"
           />
-          {errors.targetWeight && (
-            <FieldError>{errors.targetWeight?.message}</FieldError>
+          {errors.targetWeight?.message && (
+            <FieldError>{getError(errors.targetWeight)}</FieldError>
           )}
+        </Field>
+        <Field>
+          <FieldLabel>Imagen</FieldLabel>
+          <Input
+            ref={fileRef}
+            type="file"
+            accept="image/png, image/jpeg, image/jpg, image/webp"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setValue("image", file);
+                setPreview(URL.createObjectURL(file));
+              }
+            }}
+            className="hidden"
+          />
+          {preview && (
+            <img src={preview} className="w-32 h-32 object-cover rounded-md" />
+          )}
+          {errors.image?.message && (
+            <FieldError>{getError(errors.image)}</FieldError>
+          )}
+          <Button type="button" onClick={() => fileRef.current?.click()}>
+            <Upload className="w-4 h-4 mr-2" />
+            Subir Imagen
+          </Button>
         </Field>
       </div>
       <Button type="submit" className="w-full">
