@@ -13,6 +13,7 @@ import AnimalFormModal from "@/components/animals/AnimalFormModal";
 function Animals() {
   const [animals, setAnimals] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedAnimal, setSelectedAnimal] = useState(null);
 
   const capitalizeFirstLetter = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -58,13 +59,18 @@ function Animals() {
 
           <DialogContent className="max-w-200! w-full">
             <DialogHeader>
-              <DialogTitle>Registrar nuevo animal</DialogTitle>
+              <DialogTitle>
+                {" "}
+                {selectedAnimal ? "Editar animal" : "Registrar nuevo animal"}
+              </DialogTitle>
             </DialogHeader>
 
             {/* Le pasamos una función al modal para que sepa cerrarse */}
             <AnimalFormModal
+              animal={selectedAnimal}
               onSuccess={() => {
                 setIsOpen(false);
+                setSelectedAnimal(null);
                 fetchAnimals();
               }}
             />
@@ -100,15 +106,21 @@ function Animals() {
               <td>{capitalizeFirstLetter(animal.sex)}</td>
               <td>{`${animal.weightAtEntry} Kg`}</td>
               <td>
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
+                <Button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                  onClick={() => {
+                    setSelectedAnimal(animal);
+                    setIsOpen(true);
+                  }}
+                >
                   Editar
-                </button>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-3"
+                </Button>
+                <Button
+                  className="bg-destructive"
                   onClick={() => handleDelete(animal.id)}
                 >
                   Eliminar
-                </button>
+                </Button>
               </td>
             </tr>
           ))}
