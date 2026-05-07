@@ -1,4 +1,8 @@
 import * as z from "zod";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
 export const priceTypeOptions = ["POR_PUNTA", "POR_KILO"] as const;
 export const sexOptions = ["macho", "hembra"] as const;
 export const categoryOptions = [
@@ -61,6 +65,14 @@ export const animalSchema = z.object({
     .default("1e4afaca-4ade-4115-8c64-1ad357c51f3e"),
   targetWeight: z.coerce.number().default(1.4),
   priceType: z.enum(priceTypeOptions).default("POR_PUNTA"),
+  image: z
+    .any()
+    .refine((file) => !file || file.size <= MAX_FILE_SIZE, "Máximo 5MB")
+    .refine(
+      (file) => !file || ACCEPTED_TYPES.includes(file.type),
+      "Formato inválido",
+    )
+    .optional(),
 });
 
 export const updateAnimalSchema = animalSchema.partial({
