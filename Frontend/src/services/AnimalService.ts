@@ -13,8 +13,27 @@ export const getAnimals = async () => {
 
 export const createAnimal = async (data: AnimalFormValues) => {
   try {
-    console.log("DATA QUE ENVÍAS:", data);
-    const res = await api.post("/animal", data);
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (value === null || value === undefined) return;
+
+      if (value instanceof Date) {
+        formData.append(key, value.toISOString());
+      } else if (value instanceof File) {
+        formData.append("image", value);
+      } else {
+        formData.append(key, String(value));
+      }
+    });
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+    const res = await api.post("/animal", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     return res.data;
   } catch (error: any) {
@@ -22,6 +41,30 @@ export const createAnimal = async (data: AnimalFormValues) => {
 
     throw error;
   }
+};
+
+export const updateAnimal = async (id: string, data: AnimalFormValues) => {
+  const formData = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (value === null || value === undefined) return;
+
+    if (value instanceof Date) {
+      formData.append(key, value.toISOString());
+    } else if (value instanceof File) {
+      formData.append(key, value);
+    } else {
+      formData.append(key, String(value));
+    }
+  });
+
+  const res = await api.put(`/animal/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return res.data;
 };
 
 export const deleteAnimal = async (id: string) => {
